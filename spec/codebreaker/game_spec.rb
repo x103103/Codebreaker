@@ -42,25 +42,54 @@ module Codebreaker
 
 
       context 'compare secret code with user code' do
-        it 'return ++++'
-        it 'return +++-'
-        it 'return ++--'
-        it 'return +---'
-        it 'return ----'
-        it 'return +++'
-        it 'return ++'
-        it 'return +'
-        it 'return ---'
-        it 'return --'
-        it 'return -'
-        it 'return ++-'
-        it 'return +--'
-        it 'return +-'
-        it 'return nothing'
+        before { game.instance_variable_set('@secret_code',['1','2','3','4']) }
+        it 'return +++' do
+          expect(game.guess '1231').to eq('+++')
+        end
+        it 'return ++--' do
+          expect(game.guess '4231').to eq('++--')
+        end
+        it 'return +---' do
+          expect(game.guess '1423').to eq('+---')
+        end
+        it 'return ----' do
+          expect(game.guess '4321').to eq('----')
+        end
+        it 'return +++' do
+          expect(game.guess '1235').to eq('+++')
+        end
+        it 'return ++' do
+          expect(game.guess '1255').to eq('++')
+        end
+        //
+        it 'return +' do
+          expect(game.guess '1555').to eq('+')
+        end
+        it 'return ---' do
+          expect(game.guess '4315').to eq('---')
+        end
+        it 'return --' do
+          expect(game.guess '4355').to eq('--')
+        end
+        it 'return -' do
+          expect(game.guess '4555').to eq('-')
+        end
+        it 'return ++-' do
+          expect(game.guess '1245').to eq('++-')
+        end
+        it 'return +--' do
+          expect(game.guess '1345').to eq('+--')
+        end
+        it 'return +-' do
+          expect(game.guess '1355').to eq('+-')
+        end
+        it 'return nothing' do
+          expect(game.guess '5555').to eq('')
+        end
       end
-      it 'change user score'
-      it 'win if all quessed'
-      it 'game over if there no attempt'
+      # it 'change user score'
+      # it 'win if all quessed'
+      # it 'game over if there no attempt'
     end
   end
 end
