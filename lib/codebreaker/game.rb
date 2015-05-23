@@ -1,7 +1,9 @@
 module Codebreaker
   class Game
     def initialize
-      @secret_code = ""
+      @secret_code = ''
+      @score = 0
+      @attempt = 0
     end
 
     def start
