@@ -6,12 +6,21 @@ module Codebreaker
     def initialize(user)
       @user = user
       @secret_code = (1..4).map { rand 1..6 }
+      @attempt = 0
     end
 
     def guess(user_code)
       raise ArgumentError, 'Wrong code' unless user_code.is_a?(String) && user_code[/^[1-6]{4}$/]
+      @attempt += 1
       result = compare_code user_code
-      result.join
+      result_str = result.join
+      if result_str == '++++'
+        {result:result_str, status:'win'}
+      elsif @attempt == 10
+        {result:result_str, status:'game over'}
+      else
+        {result:result_str, status:'next'}
+      end
     end
 
     private
@@ -22,14 +31,13 @@ module Codebreaker
 
       4.times do |i|
         if user_code_array[i] == secret_code[i]
-
           result << '+'
           user_code_array[i] = nil
           secret_code[i] = nil
         end
       end
 
-      user_code_array.compact!; secret_code.compact!;
+      user_code_array.compact!; secret_code.compact!
 
       user_code_array.each_index do |user_i|
         secret_code.each_index do |secret_i|
@@ -38,12 +46,10 @@ module Codebreaker
             result << '-'
             secret_code[secret_i] = nil
           end
-
         end
       end
 
       result
-
     end
   end
 
