@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 module Codebreaker
   describe Game do
     context "#start" do
@@ -17,7 +15,7 @@ module Codebreaker
       end
 
       it "saves secret code with numbers from 1 to 6" do
-        expect(game.instance_variable_get(:@secret_code)).to match(/[1-6]+/)
+        expect(game.instance_variable_get(:@secret_code).join).to match(/[1-6]+/)
       end
     end
   end
