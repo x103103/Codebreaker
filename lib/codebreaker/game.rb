@@ -1,6 +1,7 @@
 module Codebreaker
   class Game
-    attr_reader :user, :secret_code
+    attr_reader :user, :secret_code, :attempt, :max_attempt
+
 
 
     def initialize(user)
@@ -8,6 +9,7 @@ module Codebreaker
       @secret_code = (1..4).map { rand 1..6 }
       @attempt = 0
       @max_attempt = 10
+      @hint = ''
     end
 
     def guess(user_code)
@@ -24,17 +26,46 @@ module Codebreaker
       end
     end
 
+    def attempts_remain
+      @max_attempt - @attempt
+    end
+
     def hint(position=rand(0..3))
-      raise ArgumentError, 'Wrong position' unless position < 4 && position >=0
+      raise TypeError, 'Wrong position type' unless position.is_a? Integer
+      return @hint unless @hint.empty?
+      position = 3 if position > 3
+      position = 0 if position < 0
       hint = '****'
-      hint[position] = @secret_code[position]
-      hint
+      hint[position] = @secret_code[position].to_s
+      @hint = hint
+    end
+
+    def save(file = 'history')
+      games = Game.load
+      games << self
+      f = File.open(file, "w")
+      f.write(Marshal.dump(games))
+      f.close
+    end
+
+    class << self
+
+      def load(file = 'history')
+        if File.exist? file
+          dump_data = File.read(file)
+          Marshal.load(dump_data)
+        else
+          []
+        end
+      end
+
     end
 
     private
     def compare_code(user_code)
       user_code_array = user_code.split('')
-      secret_code = @secret_code
+      user_code_array.map! {|item| item.to_i}
+      secret_code = @secret_code.clone
       result = []
 
       4.times do |i|
@@ -59,6 +90,8 @@ module Codebreaker
 
       result
     end
+
+
   end
 
 end

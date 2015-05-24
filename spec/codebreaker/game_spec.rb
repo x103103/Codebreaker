@@ -24,10 +24,14 @@ module Codebreaker
         expect(game.instance_variable_get(:@attempt)).to eq(0)
       end
 
+      it 'have number of max attempt' do
+        expect(game.instance_variable_get(:@max_attempt)).to eq(10)
+      end
+
     end
 
     context '#guess' do
-      before { game.instance_variable_set('@secret_code',['1','2','3','4']) }
+      before { game.instance_variable_set('@secret_code',[1,2,3,4]) }
 
       context 'error if user code' do
         it 'not a String' do
@@ -109,7 +113,7 @@ module Codebreaker
     end
 
     context '#hint' do
-      before { game.instance_variable_set('@secret_code',['1','2','3','4']) }
+      before { game.instance_variable_set('@secret_code',[1,2,3,4]) }
 
       it 'return 1***' do
         expect(game.hint 0).to eq('1***')
@@ -120,13 +124,15 @@ module Codebreaker
       end
 
       context 'error if position' do
-        it 'more than 3' do
-          expect{game.hint 4}.to raise_error(ArgumentError, 'Wrong position')
+        it 'not a number' do
+          expect{game.hint('d')}.to raise_error(TypeError, 'Wrong position type')
         end
+      end
+    end
 
-        it 'length is less than 0' do
-          expect{game.hint(-1)}.to raise_error(ArgumentError, 'Wrong position')
-        end
+    context '#attempts_remain' do
+      it 'return difference of max and current attempt' do
+        expect(game.attempts_remain).to eq(10)
       end
     end
   end

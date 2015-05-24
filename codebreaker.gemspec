@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "rspec-collection_matchers"
   spec.add_development_dependency "fuubar"
+  spec.add_runtime_dependency 'highline', '~> 1.7.2'
 end
