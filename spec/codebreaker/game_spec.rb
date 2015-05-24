@@ -31,19 +31,19 @@ module Codebreaker
 
       context 'error if user code' do
         it 'not a String' do
-          expect{game.guess 1234}.to raise_error(ArgumentError, 'Wrong code')
+          expect{game.guess 1234}.to raise_error(ArgumentError, 'Wrong user code')
         end
 
         it 'length is less than 4' do
-          expect{game.guess '123'}.to raise_error(ArgumentError, 'Wrong code')
+          expect{game.guess '123'}.to raise_error(ArgumentError, 'Wrong user code')
         end
 
         it 'length is more than 4' do
-          expect{game.guess '123456'}.to raise_error(ArgumentError, 'Wrong code')
+          expect{game.guess '123456'}.to raise_error(ArgumentError, 'Wrong user code')
         end
 
         it 'include numbers not between 1-6' do
-          expect{game.guess '1237'}.to raise_error(ArgumentError, 'Wrong code')
+          expect{game.guess '1237'}.to raise_error(ArgumentError, 'Wrong user code')
         end
       end
 
@@ -94,18 +94,40 @@ module Codebreaker
 
       context 'status' do
         it 'win if all quessed' do
-          expect(game.guess('1234')[:status]).to eq('win')
+          expect(game.guess('1234')[:status]).to eq(:win)
         end
         it 'game over if there no attempt' do
           game.instance_variable_set('@attempt',9)
-          expect(game.guess('5555')[:status]).to eq('game over')
+          expect(game.guess('5555')[:status]).to eq(:game_over)
         end
         it 'next if there is attempt' do
           game.instance_variable_set('@attempt',0)
-          expect(game.guess('5555')[:status]).to eq('next')
+          expect(game.guess('5555')[:status]).to eq(:next)
         end
       end
 
+    end
+
+    context '#hint' do
+      before { game.instance_variable_set('@secret_code',['1','2','3','4']) }
+
+      it 'return 1***' do
+        expect(game.hint 0).to eq('1***')
+      end
+
+      it 'return ***4' do
+        expect(game.hint 3).to eq('***4')
+      end
+
+      context 'error if position' do
+        it 'more than 3' do
+          expect{game.hint 4}.to raise_error(ArgumentError, 'Wrong position')
+        end
+
+        it 'length is less than 0' do
+          expect{game.hint(-1)}.to raise_error(ArgumentError, 'Wrong position')
+        end
+      end
     end
   end
 end

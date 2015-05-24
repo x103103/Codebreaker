@@ -7,20 +7,28 @@ module Codebreaker
       @user = user
       @secret_code = (1..4).map { rand 1..6 }
       @attempt = 0
+      @max_attempt = 10
     end
 
     def guess(user_code)
-      raise ArgumentError, 'Wrong code' unless user_code.is_a?(String) && user_code[/^[1-6]{4}$/]
+      raise ArgumentError, 'Wrong user code' unless user_code.is_a?(String) && user_code[/^[1-6]{4}$/]
       @attempt += 1
       result = compare_code user_code
       result_str = result.join
       if result_str == '++++'
-        {result:result_str, status:'win'}
-      elsif @attempt == 10
-        {result:result_str, status:'game over'}
+        {result:result_str, status: :win}
+      elsif @attempt == @max_attempt
+        {result:result_str, status: :game_over}
       else
-        {result:result_str, status:'next'}
+        {result:result_str, status: :next}
       end
+    end
+
+    def hint(position=rand(0..3))
+      raise ArgumentError, 'Wrong position' unless position < 4 && position >=0
+      hint = '****'
+      hint[position] = @secret_code[position]
+      hint
     end
 
     private
