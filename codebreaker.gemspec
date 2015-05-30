@@ -9,8 +9,13 @@ Gem::Specification.new do |spec|
   spec.authors       = ["alex"]
   spec.email         = ["x103103@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.summary       = %q{Codebreaker is a logic game in which a code-breaker tries to break a secret code created by a code-maker. }
+  spec.description   = %q{The code-maker creates a secret code of four numbers between 1 and 6.
+The code-breaker then gets some number of chances to break the code. In each turn, the code-breaker makes a guess of four numbers. The code-maker then marks the guess with up to four + and - signs.
+
+A + indicates an exact match: one of the numbers in the guess is the same as one of the numbers in the secret code and in the same position.
+A - indicates a number match: one of the numbers in the guess is the same as one of the numbers in the secret code but in a different position.
+}
   spec.homepage      = "https://github.com/x103103/Codebreaker"
   spec.license       = "MIT"
 
