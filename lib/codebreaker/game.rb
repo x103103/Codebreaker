@@ -48,6 +48,14 @@ module Codebreaker
       f.close
     end
 
+    def to_hash
+      {
+          user: @user,
+          attempts_remain: attempts_remain,
+          hint: @hint
+      }
+    end
+
     class << self
 
       def load(file = 'history')
