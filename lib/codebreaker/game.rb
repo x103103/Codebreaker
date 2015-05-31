@@ -50,7 +50,7 @@ module Codebreaker
 
     def to_hash
       {
-          user: @user,
+          user: @user.to_hash,
           attempts_remain: attempts_remain,
           hint: @hint
       }
