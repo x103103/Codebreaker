@@ -1,6 +1,6 @@
 module Codebreaker
   class Game
-    attr_reader :user, :secret_code, :attempt, :max_attempt
+    attr_reader :user, :secret_code, :attempt, :max_attempts, :results, :status
 
 
 
@@ -8,26 +8,29 @@ module Codebreaker
       @user = user
       @secret_code = (1..4).map { rand 1..6 }
       @attempt = 0
-      @max_attempt = 10
+      @max_attempts = 10
       @hint = ''
+      @results = []
+      @status = :next
     end
 
     def guess(user_code)
       raise ArgumentError, 'Wrong user code' unless user_code.is_a?(String) && user_code[/^[1-6]{4}$/]
       @attempt += 1
       result = compare_code user_code
-      result_str = result.join
-      if result_str == '++++'
-        {result:result_str, status: :win}
-      elsif @attempt == @max_attempt
-        {result:result_str, status: :game_over}
+      @results << result.join
+      if @results.last == '++++'
+        @status = :win
+      elsif @attempt == @max_attempts
+        @status = :game_over
       else
-        {result:result_str, status: :next}
+        @status = :next
       end
+      self
     end
 
-    def attempts_remain
-      @max_attempt - @attempt
+    def remaining_attempts
+      @max_attempts - @attempt
     end
 
     def hint(position=rand(0..3))
@@ -51,8 +54,12 @@ module Codebreaker
     def to_hash
       {
           user: @user.to_hash,
-          attempts_remain: attempts_remain,
-          hint: @hint
+          remaining_attempts: remaining_attempts,
+          attempt: @attempt,
+          max_attempts: @max_attempts,
+          hint: @hint,
+          results: @results,
+          status: @status
       }
     end
 

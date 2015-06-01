@@ -25,7 +25,15 @@ module Codebreaker
       end
 
       it 'have number of max attempt' do
-        expect(game.instance_variable_get(:@max_attempt)).to eq(10)
+        expect(game.instance_variable_get(:@max_attempts)).to eq(10)
+      end
+
+      it 'have collection of user guesses result' do
+        expect(game.instance_variable_get(:@results).class).to eq(Array)
+      end
+
+      it 'have status' do
+        expect(game.instance_variable_get(:@status)).to eq(:next)
       end
 
     end
@@ -52,61 +60,45 @@ module Codebreaker
       end
 
       context 'compare secret code with user code' do
-        it 'return ++++' do
-          expect(game.guess('1234')[:result]).to eq('++++')
+        guesses = {
+            '1234'=>'++++',
+            '4231'=>'++--',
+            '1423'=>'+---',
+            '4321'=>'----',
+            '1235'=>'+++',
+            '1255'=>'++',
+            '1555'=>'+',
+            '4315'=>'---',
+            '4355'=>'--',
+            '4555'=>'-',
+            '1245'=>'++-',
+            '1345'=>'+--',
+            '1355'=>'+-',
+            '5555'=>''
+        }
+        guesses.each do |guess,result|
+          it "return #{result}" do
+            game.guess(guess)
+            expect(game.results.last).to eq(result)
+          end
         end
-        it 'return ++--' do
-          expect(game.guess('4231')[:result]).to eq('++--')
-        end
-        it 'return +---' do
-          expect(game.guess('1423')[:result]).to eq('+---')
-        end
-        it 'return ----' do
-          expect(game.guess('4321')[:result]).to eq('----')
-        end
-        it 'return +++' do
-          expect(game.guess('1235')[:result]).to eq('+++')
-        end
-        it 'return ++' do
-          expect(game.guess('1255')[:result]).to eq('++')
-        end
-        it 'return +' do
-          expect(game.guess('1555')[:result]).to eq('+')
-        end
-        it 'return ---' do
-          expect(game.guess('4315')[:result]).to eq('---')
-        end
-        it 'return --' do
-          expect(game.guess('4355')[:result]).to eq('--')
-        end
-        it 'return -' do
-          expect(game.guess('4555')[:result]).to eq('-')
-        end
-        it 'return ++-' do
-          expect(game.guess('1245')[:result]).to eq('++-')
-        end
-        it 'return +--' do
-          expect(game.guess('1345')[:result]).to eq('+--')
-        end
-        it 'return +-' do
-          expect(game.guess('1355')[:result]).to eq('+-')
-        end
-        it 'return nothing' do
-          expect(game.guess('5555')[:result]).to eq('')
-        end
+
       end
 
       context 'status' do
         it 'win if all quessed' do
-          expect(game.guess('1234')[:status]).to eq(:win)
+          game.guess('1234')
+          expect(game.status).to eq(:win)
         end
         it 'game over if there no attempt' do
           game.instance_variable_set('@attempt',9)
-          expect(game.guess('5555')[:status]).to eq(:game_over)
+          game.guess('5555')
+          expect(game.status).to eq(:game_over)
         end
         it 'next if there is attempt' do
           game.instance_variable_set('@attempt',0)
-          expect(game.guess('5555')[:status]).to eq(:next)
+          game.guess('5555')
+          expect(game.status).to eq(:next)
         end
       end
 
@@ -130,9 +122,47 @@ module Codebreaker
       end
     end
 
-    context '#attempts_remain' do
+    context '#remaining_attempts' do
       it 'return difference of max and current attempt' do
-        expect(game.attempts_remain).to eq(10)
+        game.instance_variable_set('@attempt',1)
+        expect(game.remaining_attempts).to eq(9)
+      end
+    end
+
+    context '#to_hash' do
+      it 'should return Hash' do
+        expect(game.to_hash.class).to eq(Hash)
+      end
+
+      it 'should contain user hash' do
+        allow(game.user).to receive(:to_hash).and_return({name:'name'})
+        expect(game.to_hash[:user]).to eq({name:'name'})
+      end
+
+      it 'should contain remaining attempts' do
+        expect(game.to_hash[:remaining_attempts]).to eq(10)
+      end
+
+      it 'should contain attempt' do
+        expect(game.to_hash[:attempt]).to eq(0)
+      end
+
+      it 'should contain max attempts' do
+        expect(game.to_hash[:max_attempts]).to eq(10)
+      end
+
+      it 'should contain hint' do
+        game.instance_variable_set('@hint','***1')
+        expect(game.to_hash[:hint]).to eq('***1')
+      end
+
+      it 'should contain results' do
+        game.instance_variable_set('@results',['+-'])
+        expect(game.to_hash[:results]).to eq(['+-'])
+      end
+
+      it 'should contain status' do
+        expect(game.to_hash[:status]).to eq(:next)
       end
     end
   end

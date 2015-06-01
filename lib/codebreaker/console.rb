@@ -27,10 +27,11 @@ module Codebreaker
             puts ''
             scores = Game.load
 
-            say "<%= color('Name', :yellow) %>________<%= color('Attempt', :yellow) %>"
+            say "<%= color('Name', :yellow) %>________<%= color('Attempt', :yellow) %>__<%= color('Status', :yellow) %>"
             scores.each do |g|
               _count = 16 - g.user.name.length
-              say "<%= color('#{g.user.name}', :blue) %><%= color(' '*#{_count}, :blue) %><%= color('#{g.attempt}', :blue) %>"
+              _count -= 1 if g.attempt >= 10
+              say "<%= color('#{g.user.name}', :blue) %><%= color(' '*#{_count}, :blue) %><%= color('#{g.attempt}', :blue) %>    <%= color('#{g.status}', :blue) %>"
             end
             puts ''
             puts ''
@@ -46,14 +47,14 @@ module Codebreaker
         say "<%= color('The game started!', :yellow) %>"
         puts ''
 
-        result = {}
+
         hint = ''
         loop do
           answer = ask("Enter a code: (type \"hint\" to see one of number)")
 
           if answer[/^[1-6]{4}$/]
-            result = game.guess answer
-            say "<%=color('#{result[:result]}',:blue)%> (attempts remain: #{game.attempts_remain})"
+            game.guess answer
+            say "<%=color('#{game.results.last}',:blue)%> (attempts remain: #{game.remaining_attempts})"
           elsif answer[/[Hh][Ii][Nn][Tt]/]
             if hint.empty?
               position = ask("What number do you want to see?").to_i if hint.empty?
@@ -69,14 +70,14 @@ module Codebreaker
           else
             next
           end
-          break unless result[:status] == :next
+          break unless game.status == :next
         end
 
-        if result[:status] == :win
+        if game.status == :win
           say "<%= color('Congratulate! You win!', :yellow) %>"
           puts ''
         end
-        if result[:status] == :game_over
+        if game.status == :game_over
           say "<%= color('Game over!', :red) %>"
           puts ''
         end
@@ -93,8 +94,8 @@ module Codebreaker
         end
 
 
-        answer = ask("Do you want play again? (type \"no\" for exit)")
-        exit if answer[/[Nn][Oo]/]
+        answer = ask("Do you want play again? (type \"n\" for exit)")
+        exit if answer[/[Nn]/]
 
       end
     end
