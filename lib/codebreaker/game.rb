@@ -38,7 +38,7 @@ module Codebreaker
     end
 
     def game_duration
-      @game_duration ? @game_duration : @game_duration = ((@end_time-@start_time)/60) if @status == :win
+      @game_duration ? @game_duration : @game_duration = ((@end_time-@start_time)/60).to_i if @status == :win
     end
 
     def hint(position=rand(0..3))
