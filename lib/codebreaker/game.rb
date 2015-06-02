@@ -1,6 +1,7 @@
 module Codebreaker
   class Game
-    attr_reader :user, :secret_code, :attempt, :max_attempts, :results, :status
+    attr_reader :user, :secret_code, :attempt, :max_attempts, :results, :status,
+                :start_time, :end_time
 
 
 
@@ -12,6 +13,7 @@ module Codebreaker
       @hint = ''
       @results = []
       @status = :next
+      @start_time = Time.new
     end
 
     def guess(user_code)
@@ -21,6 +23,7 @@ module Codebreaker
       @results << result.join
       if @results.last == '++++'
         @status = :win
+        @end_time = Time.new
       elsif @attempt == @max_attempts
         @status = :game_over
       else
@@ -31,6 +34,10 @@ module Codebreaker
 
     def remaining_attempts
       @max_attempts - @attempt
+    end
+
+    def game_duration
+      @game_duration = ((@end_time-@start_time)/60) if @status == :win
     end
 
     def hint(position=rand(0..3))
@@ -59,7 +66,8 @@ module Codebreaker
           max_attempts: @max_attempts,
           hint: @hint,
           results: @results,
-          status: @status
+          status: @status,
+          game_duration: @game_duration
       }
     end
 

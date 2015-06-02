@@ -36,6 +36,10 @@ module Codebreaker
         expect(game.instance_variable_get(:@status)).to eq(:next)
       end
 
+      it 'have start time' do
+        expect(game.instance_variable_get(:@start_time).class).to eq(Time)
+      end
+
     end
 
     context '#guess' do
@@ -102,6 +106,16 @@ module Codebreaker
         end
       end
 
+      context 'end time' do
+        it 'use Time' do
+          expect(Time).to receive(:new).once
+          game.guess('1234')
+        end
+        it 'set' do
+          game.guess('1234')
+          expect(game.instance_variable_get('@end_time').class).to eq(Time)
+        end
+      end
     end
 
     context '#hint' do
@@ -126,6 +140,16 @@ module Codebreaker
       it 'return difference of max and current attempt' do
         game.instance_variable_set('@attempt',1)
         expect(game.remaining_attempts).to eq(9)
+      end
+    end
+
+    context '#game_duration' do
+
+      it 'return game duration in minutes' do
+        game.instance_variable_set('@status',:win)
+        game.instance_variable_set('@start_time',Time.new(2015,06,02,12))
+        game.instance_variable_set('@end_time',Time.new(2015,06,02,14))
+        expect(game.game_duration).to eq(120)
       end
     end
 
@@ -163,6 +187,11 @@ module Codebreaker
 
       it 'should contain status' do
         expect(game.to_hash[:status]).to eq(:next)
+      end
+
+      it 'should contain game duration' do
+        game.instance_variable_set('@game_duration',2)
+        expect(game.to_hash[:game_duration]).to eq(2)
       end
     end
   end
