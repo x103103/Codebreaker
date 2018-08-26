@@ -107,10 +107,6 @@ module Codebreaker
       end
 
       context 'end time' do
-        it 'use Time' do
-          expect(Time).to receive(:new).once
-          game.guess('1234')
-        end
         it 'set' do
           game.guess('1234')
           expect(game.instance_variable_get('@end_time').class).to eq(Time)
